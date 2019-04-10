@@ -14,3 +14,10 @@
 Route::get('/', function () {
     return view('content.content');
 });
+
+
+Route::get('/categoria', 'CategorieController@index');  
+Route::post('/categoria/registrar', 'CategorieController@store'); 
+Route::put('/categoria/actualizar', 'CategorieController@update');  
+Route::put('/categoria/desactivar', 'CategorieController@desactivate');  
+Route::put('/categoria/activar', 'CategorieController@activate');  
