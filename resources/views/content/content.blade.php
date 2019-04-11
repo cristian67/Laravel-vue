@@ -2,10 +2,9 @@
    @extends('main')
    @section('content')    
         <template v-if="menu==0">
-                <Example-Component></Example-Component>
         </template>
         <template v-if="menu==1">
-                <h1>"contenido menu 1"</h1>
+                <categorie></categorie>
         </template>
         <template v-if="menu==2">
                 <h1>"contenido menu 2"</h1>
