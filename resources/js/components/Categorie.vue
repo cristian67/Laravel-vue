@@ -44,12 +44,23 @@
                                  <td>
                                      <button type="button" 
                                              class="btn btn-warning btn-sm"
-                                             @click="abrirModal('categoria','registrar',categoria)">
+                                             @click="abrirModal('categoria','actualizar',categoria)">
                                        <i class="icon-pencil"></i>
                                      </button> &nbsp;
-                                     <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalEliminar">
-                                       <i class="icon-trash"></i>
-                                     </button>
+                                     <template v-if="categoria.condicion">
+                                            <button type="button" 
+                                                    class="btn btn-danger btn-sm"
+                                                    @click="desactivarCategoria(categoria.id)" >
+                                                    <i class="icon-trash"></i>
+                                            </button>
+                                     </template>
+                                     <template v-else>
+                                            <button type="button" 
+                                                    class="btn btn-info btn-sm"
+                                                    @click="activarCategoria(categoria.id)" >
+                                                    <i class="icon-check"></i>                                            
+                                            </button>
+                                     </template>
                                  </td>
                                  <td v-text="categoria.nombre"></td>
                                  <td v-text="categoria.descripcion"></td>
@@ -108,14 +119,21 @@
                              <div class="form-group row">
                                  <label class="col-md-3 form-control-label" for="text-input">Nombre</label>
                                  <div class="col-md-9">
-                                     <input type="text" v-model="nombre"  class="form-control" placeholder="Nombre de categoría">
-                                     <span class="help-block">(*) Ingrese el nombre de la categoría</span>
+                                     <input type="text" v-model="nombre"  class="form-control" placeholder="Nombre de cat  egoría">
                                  </div>
                              </div>
                              <div class="form-group row">
-                                 <label class="col-md-3 form-control-label" for="email-input">Descripción</label>
+                                 <label class="col-md-3 form-control-label" for="email-input" >Descripción</label>
                                  <div class="col-md-9">
                                      <input type="email" v-model="descripcion" class="form-control" placeholder="Descripcion">
+                                 </div>
+                             </div>
+
+                             <div v-show="errorCategoria" class="form-group row div-error">
+                                 <div class="text-center text-error">
+                                      <div v-for="error in errorMostrarMsjCategoria" :key="error" v-text="error"> 
+                                        
+                                      </div>
                                  </div>
                              </div>
                          </form>
@@ -123,7 +141,7 @@
                      <div class="modal-footer">
                          <button type="button" class="btn btn-secondary" @click="cerrarModal()">Cerrar</button>
                          <button type="button" v-if="tipoAccion==1" class="btn btn-primary" @click="registrarCategoria()">Guardar</button>
-                         <button type="button" v-if="tipoAccion==2" class="btn btn-primary">Actualizar</button>
+                         <button type="button" v-if="tipoAccion==2" class="btn btn-primary" @click="actualizarCategoria()" >Actualizar</button>
 
                      </div>
                  </div>
@@ -132,29 +150,6 @@
              <!-- /.modal-dialog -->
          </div>
          <!--Fin del modal-->
-         <!-- Inicio del modal Eliminar -->
-         <div class="modal fade" id="modalEliminar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
-             <div class="modal-dialog modal-danger" role="document">
-                 <div class="modal-content">
-                     <div class="modal-header">
-                         <h4 class="modal-title">Eliminar Categoría</h4>
-                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                           <span aria-hidden="true">×</span>
-                         </button>
-                     </div>
-                     <div class="modal-body">
-                         <p>Estas seguro de eliminar la categoría?</p>
-                     </div>
-                     <div class="modal-footer">
-                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                         <button type="button" class="btn btn-danger">Eliminar</button>
-                     </div>
-                 </div>
-                 <!-- /.modal-content -->
-             </div>
-             <!-- /.modal-dialog -->
-         </div>
-         <!-- Fin del modal Eliminar -->
      </main>
 </template>
 
@@ -164,12 +159,15 @@ export default {
     
     data(){
       return {
-       nombre: '',
-       descripcion: '',
-       arrayCategorie: [],
-       modal: 0,
-       tituloModal: '',
-       tipoAccion: 0
+        categoria_id: 0,
+        nombre: '',
+        descripcion: '',
+        arrayCategorie: [],
+        modal: 0,
+        tituloModal: '',
+        tipoAccion: 0,
+        errorCategoria: 0,
+        errorMostrarMsjCategoria : []
       }   
     },
 
@@ -192,8 +190,13 @@ export default {
         },
         
         registrarCategoria(){
-            let me = this;
             
+            if (this.validarCategoria()) 
+            {
+                return;    
+            }
+            
+            let me = this;
             axios.post('/categoria/registrar', 
                        {
                            'nombre': this.nombre,
@@ -205,6 +208,47 @@ export default {
                        }).catch(function (error) {
                                     console.log(error);
             });
+        },
+
+        actualizarCategoria(){
+
+            if (this.validarCategoria()) 
+            {
+                return;    
+            }
+            
+            let me = this;
+            axios.put('/categoria/actualizar', 
+                       {
+                           'nombre': this.nombre,
+                           'descripcion': this.descripcion,
+                           'id': this.categoria_id
+
+                       }).then( function (response) {
+                           //Si todo sale bien se ejecuta cerrar y listar categoria  
+                           me.cerrarModal();
+                           me.listCategoria();
+                       }).catch(function (error) {
+                                    console.log(error);
+            });
+
+        },
+
+        validarCategoria(){
+            this.errorCategoria = 0;
+            this.errorMostrarMsjCategoria = [];
+
+            if (!this.nombre) 
+            {
+                this.errorMostrarMsjCategoria.push("El nombre no puede estar vacío!. ");    
+            }
+
+            if (this.errorMostrarMsjCategoria.length) 
+            { 
+                this.errorCategoria = 1;
+            }
+
+            return this.errorCategoria;
         },
 
         abrirModal(modelo,accion,data=[]){
@@ -220,15 +264,116 @@ export default {
                             this.nombre = '';
                             this.descripcion = '';
                             this.tipoAccion = 1;
-                        
+                         
                             break;
                         
                         case 'actualizar':
-                            break;
+                            console.log(data);    
+                            this.modal=1; 
+                            this.tituloModal = 'Actualizar Categoria';
+                            this.tipoAccion = 2;
+                            this.categoria_id = data['id'];
+                            this.nombre = data['nombre'];
+                            this.descripcion = data['descripcion'];
+                            break;                       
                     }
                 }
             }
         },
+
+        desactivarCategoria(id){
+            const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: 'btn btn-success',
+                        cancelButton: 'btn btn-danger'
+                    },
+                    buttonsStyling: false,
+                    })
+
+                    swalWithBootstrapButtons.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, cancel!',
+                    reverseButtons: true
+                    }).then((result) => {
+                    if(result.value){
+                        let me = this;
+                        console.log(id);
+                        axios.put('/categoria/desactivar',{
+                                        'id': id
+                                    }).then( function (response) {
+                                        //Si todo sale bien se ejecuta cerrar y listar categoria  
+                                        me.listCategoria();
+                                        swalWithBootstrapButtons.fire(
+                                            'Deleted!',
+                                            'Your file has been deleted.',
+                                            'success'
+                                            )
+                                    }).catch(function (error) {
+                                                    console.log(error);
+                                    });
+                    } else if (
+                        // Read more about handling dismissals
+                        result.dismiss === Swal.DismissReason.cancel
+                    ) {
+                        swalWithBootstrapButtons.fire(
+                        'Cancelled',
+                        'Your imaginary file is safe :)',
+                        'error'
+                        )
+                    }
+                    })  
+
+        },
+
+        activarCategoria(id){
+        const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: 'btn btn-success',
+                        cancelButton: 'btn btn-danger'
+                    },
+                    buttonsStyling: false,
+                    })
+
+                    swalWithBootstrapButtons.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, activate it!',
+                    cancelButtonText: 'No, cancel!',
+                    reverseButtons: true
+                    }).then((result) => {
+                    if(result.value){
+                        let me = this;
+                        console.log(id);
+                        axios.put('/categoria/activar',{
+                                        'id': id
+                                    }).then( function (response) {
+                                        //Si todo sale bien se ejecuta cerrar y listar categoria  
+                                        me.listCategoria();
+                                        swalWithBootstrapButtons.fire(
+                                            'Activate!',
+                                            'Your file has been activate.',
+                                            'success'
+                                            )
+                                    }).catch(function (error) {
+                                                    console.log(error);
+                                    });
+                    } else if (
+                        // Read more about handling dismissals
+                        result.dismiss === Swal.DismissReason.cancel
+                    ) {
+                        swalWithBootstrapButtons.fire(
+                        'Cancelled'
+                        )
+                    }
+                    })  
+        },
+
         cerrarModal()
         {
             this.modal=0;
@@ -259,6 +404,14 @@ export default {
         position: absolute !important;
         background-color: #3c29297a !important; 
 
+    }
+    .div-error{
+        display: flex;
+        justify-content: center;
+    }
+    .text-error{
+        color: red;
+        font-weight: bold;
     }
 </style>
 
