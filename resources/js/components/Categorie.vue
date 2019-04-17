@@ -21,12 +21,12 @@
                      <div class="form-group row">
                          <div class="col-md-6">
                              <div class="input-group">
-                                 <select class="form-control col-md-3" id="opcion" name="opcion">
+                                 <select class="form-control col-md-3" v-model="criterio">
                                    <option value="nombre">Nombre</option>
                                    <option value="descripcion">Descripción</option>
                                  </select>
-                                 <input type="text" id="texto" name="texto" class="form-control" placeholder="Texto a buscar">
-                                 <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                 <input type="text" v-model="buscar" @keyup.enter="listCategoria(1,buscar,criterio)" class="form-control" placeholder="Texto a buscar">
+                                 <button type="submit" @click="listCategoria(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                              </div>
                          </div>
                      </div>
@@ -80,23 +80,14 @@
                      </table>
                      <nav>
                          <ul class="pagination">
-                             <li class="page-item">
-                                 <a class="page-link" href="#">Ant</a>
+                             <li class="page-item" v-if="pagination.current_page > 1">
+                                 <a class="page-link" href="#" @click.prevent="cambiarPagina(pagination.current_page - 1,buscar,criterio)">Ant</a>
                              </li>
-                             <li class="page-item active">
-                                 <a class="page-link" href="#">1</a>
-                             </li>
-                             <li class="page-item">
-                                 <a class="page-link" href="#">2</a>
-                             </li>
-                             <li class="page-item">
-                                 <a class="page-link" href="#">3</a>
-                             </li>
-                             <li class="page-item">
-                                 <a class="page-link" href="#">4</a>
-                             </li>
-                             <li class="page-item">
-                                 <a class="page-link" href="#">Sig</a>
+                             <li class="page-item" v-for="page in pagesNumber" :key="page" :class="[page == isActived ? 'active':'']">
+                                 <a class="page-link" href="#" @click.prevent="cambiarPagina(page,buscar,criterio)" v-text="page"> </a>
+                             </li>                         
+                             <li class="page-item" v-if="pagination.current_page < pagination.last_page">
+                                 <a class="page-link" href="#" @click.prevent="cambiarPagina(pagination.current_page + 1,buscar,criterio)" >Sig</a> 
                              </li>
                          </ul>
                      </nav>
@@ -167,28 +158,85 @@ export default {
         tituloModal: '',
         tipoAccion: 0,
         errorCategoria: 0,
-        errorMostrarMsjCategoria : []
+        errorMostrarMsjCategoria : [],
+        pagination: {
+                
+            'total':0,
+            'current_page':0,
+            'per_page': 0,
+            'last_page':0,
+            'from':0,
+            'to':0   
+        },
+        offset: 3, 
+        criterio: 'nombre',
+        buscar: ''
       }   
+    },
+
+    //Propiedad Computada
+    computed: {
+        
+        isActived: function(){
+            return this.pagination.current_page;
+        },
+
+        pagesNumber: function (){
+            if(!this.pagination.to)
+            {
+                return [];
+            }
+
+            var from = this.pagination.current_page - this.offset;
+            if(from<1)
+            {
+                from = 1;      
+            }
+
+            var to = from + (this.offset * 2);
+            if(to >= this.pagination.last_page)
+            {
+                to=this.pagination.last_page;
+            }
+
+            var pagesArray = [];
+            while(from<=to)
+            {
+                pagesArray.push(from);
+                from++;
+            }
+
+            return pagesArray;
+        } 
     },
 
     //Funciones    
     methods: {
-        listCategoria(){
-            let me = this;
-                axios.get('/categoria')
+        listCategoria(page, buscar, criterio){
+            let me  = this;
+            var url = '/categoria?page='+page+'&buscar='+buscar+'&criterio='+criterio; 
+                axios.get(url)  
                             .then(function (response) {
-                            me.arrayCategorie = response.data;
-                            console.log(response.data);
-                            })
+                                var resp = response.data; 
+                                me.arrayCategorie = resp.categorias.data;
+                                me.pagination = resp.pagination;
+                                console.log(response.data);
+                                })
                             .catch(function (error) {
-                            // handle error
-                            console.log(error);
-                            })
+                                // handle error
+                                console.log(error);
+                                })
                             .then(function () {
                             // always executed
                 });
         },
-        
+
+        cambiarPagina(page, buscar, criterio){
+            let me = this;
+            me.pagination.current_page = page;
+            me.listCategoria(page, buscar, criterio);
+        },
+    
         registrarCategoria(){
             
             if (this.validarCategoria()) 
@@ -204,7 +252,7 @@ export default {
                        }).then( function (response) {
                            //Si todo sale bien se ejecuta cerrar y listar categoria  
                            me.cerrarModal();
-                           me.listCategoria();
+                           me.listCategoria(1,'','nombre');
                        }).catch(function (error) {
                                     console.log(error);
             });
@@ -227,7 +275,7 @@ export default {
                        }).then( function (response) {
                            //Si todo sale bien se ejecuta cerrar y listar categoria  
                            me.cerrarModal();
-                           me.listCategoria();
+                           me.listCategoria(1,'','nombre');
                        }).catch(function (error) {
                                     console.log(error);
             });
@@ -306,7 +354,7 @@ export default {
                                         'id': id
                                     }).then( function (response) {
                                         //Si todo sale bien se ejecuta cerrar y listar categoria  
-                                        me.listCategoria();
+                                        me.listCategoria(1,'','nombre');
                                         swalWithBootstrapButtons.fire(
                                             'Deleted!',
                                             'Your file has been deleted.',
@@ -354,7 +402,7 @@ export default {
                                         'id': id
                                     }).then( function (response) {
                                         //Si todo sale bien se ejecuta cerrar y listar categoria  
-                                        me.listCategoria();
+                                        me.listCategoria(1,'','nombre');
                                         swalWithBootstrapButtons.fire(
                                             'Activate!',
                                             'Your file has been activate.',
@@ -370,7 +418,7 @@ export default {
                         swalWithBootstrapButtons.fire(
                         'Cancelled'
                         )
-                    }
+                    } 
                     })  
         },
 
@@ -385,7 +433,7 @@ export default {
 
     //Funcion pre-determinada con la data cargada
     mounted() {
-           this.listCategoria();
+           this.listCategoria(1,this.buscar,this.criterio);
     }
     
     
