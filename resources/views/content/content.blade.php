@@ -2,13 +2,17 @@
    @extends('main')
    @section('content')    
         <template v-if="menu==0">
+        
         </template>
+        
         <template v-if="menu==1">
-                <categorie></categorie>
+                <Categoria></Categoria>
         </template>
+        
         <template v-if="menu==2">
-                <h1>"contenido menu 2"</h1>
+                <Articulo></Articulo>
         </template>
+
         <template v-if="menu==3">
                 <h1>"contenido menu 3"</h1>
         </template>

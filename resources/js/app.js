@@ -21,7 +21,16 @@ window.Vue = require('vue');
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
 // Vue.component('example-component', require('./components/ExampleComponent.vue').default);
-Vue.component('categorie', require('./components/Categorie.vue').default);
+Vue.component(
+    'Categoria',
+    require('./components/Categorie.vue').default
+);
+Vue.component(
+    'Articulo',
+    require('./components/Article.vue').default
+);
+
+// Vue.component('articulo', require('./components/Article.vue'));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -34,4 +43,5 @@ const app = new Vue({
     data:{
         menu: 0
     }
+
 });

@@ -39,9 +39,17 @@ class CategorieController extends Controller
     }
 
  
-    public function create()
+    public function selectCategoria(Request $request)
     {
-        //
+        if(!$request->ajax()) return redirect('/');
+
+        $categories = Categorie::where('condicion','=','1')
+                                 ->select('id','nombre')
+                                 ->orderBy('nombre','asc')
+                                 ->get();
+
+        return ['categorias'=> $categories];
+
     }
 
     public function store(Request $request)
@@ -55,18 +63,7 @@ class CategorieController extends Controller
         $categorie->save();
     }
 
-    public function show($id)
-    {
-        //
-    }
-
- 
-    public function edit($id)
-    {
-        //
-    }
-
-
+   
     public function update(Request $request)
     {
         if(!$request->ajax()) return redirect('/');
@@ -100,8 +97,5 @@ class CategorieController extends Controller
         $categorie->save();
     }
 
-    public function destroy($id)
-    {
-        //
-    }
+  
 }

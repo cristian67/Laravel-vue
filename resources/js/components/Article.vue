@@ -8,10 +8,10 @@
              <!-- Ejemplo de tabla Listado -->
              <div class="card">
                  <div class="card-header">
-                     <i class="fa fa-align-justify"></i> Categorías
+                     <i class="fa fa-align-justify"></i> Articulos
                      <button type="button" 
                              class="btn btn-secondary" 
-                             @click="abrirModal('categoria','registrar')">
+                             @click="abrirModal('articulo','registrar')">
                          <i class="icon-plus"></i>&nbsp;Nuevo
                      </button>
                  </div>
@@ -23,8 +23,8 @@
                                    <option value="nombre">Nombre</option>
                                    <option value="descripcion">Descripción</option>
                                  </select>
-                                 <input type="text" v-model="buscar" @keyup.enter="listCategoria(1,buscar,criterio)" class="form-control" placeholder="Texto a buscar">
-                                 <button type="submit" @click="listCategoria(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                 <input type="text" v-model="buscar" @keyup.enter="listArticulo(1,buscar,criterio)" class="form-control" placeholder="Texto a buscar">
+                                 <button type="submit" @click="listArticulo(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                              </div>
                          </div>
                      </div>
@@ -32,39 +32,47 @@
                          <thead>
                              <tr>
                                  <th>Opciones</th>
+                                 
+                                 <th>Codigo</th>
                                  <th>Nombre</th>
+                                 <th>Categoria</th>
+                                 <th>Precio Venta</th>
+                                 <th>Stock</th>
                                  <th>Descripción</th>
                                  <th>Estado</th>
                              </tr>
                          </thead>
                          <tbody>
-                             <tr v-for = "categoria in arrayCategorie" :key = "categoria.id">
+                             <tr v-for = "articulo in arrayArticulo" :key = "articulo.id">
                                  <td>
                                      <button type="button" 
                                              class="btn btn-warning btn-sm"
-                                             @click="abrirModal('categoria','actualizar',categoria)">
+                                             @click="abrirModal('articulo','actualizar',articulo)">
                                        <i class="icon-pencil"></i>
                                      </button> &nbsp;
-                                     <template v-if="categoria.condicion">
+                                     <template v-if="articulo.condicion">
                                             <button type="button" 
                                                     class="btn btn-danger btn-sm"
-                                                    @click="desactivarCategoria(categoria.id)" >
+                                                    @click="desactivarArticulo(articulo.id)" >
                                                     <i class="icon-trash"></i>
                                             </button>
-                                     </template>
+                                     </template>  
                                      <template v-else>
                                             <button type="button" 
                                                     class="btn btn-info btn-sm"
-                                                    @click="activarCategoria(categoria.id)" >
+                                                    @click="activarArticulo(articulo.id)" >
                                                     <i class="icon-check"></i>                                            
                                             </button>
                                      </template>
                                  </td>
-                                 <td v-text="categoria.nombre"></td>
-                                 <td v-text="categoria.descripcion"></td>
+                                 <td v-text="articulo.codigo"></td>
+                                 <td v-text="articulo.nombre"></td>                                                               
+                                 <td v-text="articulo.categoria"></td>
+                                 <td v-text="articulo.precio_venta"></td>
+                                 <td v-text="articulo.stock"></td>
+                                 <td v-text="articulo.descripcion"></td>
                                  <td>
-
-                                   <div v-if="categoria.condicion">
+                                   <div v-if="articulo.condicion">
                                      <span class="badge badge-success">Activo</span>
                                    </div>
                                    <div v-else>
@@ -105,22 +113,62 @@
                      </div>
                      <div class="modal-body">
                          <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
-                             <div class="form-group row">
+                            
+                            <div class="form-group row">
+                                 <label class="col-md-3 form-control-label" for="text-input">Categoria</label>
+                                 <div class="col-md-9">
+                                     <select class="form-control" v-model="idcategoria">
+                                        <option value="0" disabled>Selección</option>
+                                        <option v-for="categoria in arrayCategoria" 
+                                                :key="categoria.id" 
+                                                :value="categoria.id" 
+                                                v-text="categoria.nombre">
+                                        </option>
+                                     </select>
+                                 </div>
+                            </div>
+
+
+                            <div class="form-group row">
+                                 <label class="col-md-3 form-control-label" for="text-input">Código</label>
+                                 <div class="col-md-9">
+                                     <input type="text" v-model="codigo"  class="form-control" placeholder="Ingrese código de barra">
+                                 </div>
+                            </div>
+
+                            <div class="form-group row">
                                  <label class="col-md-3 form-control-label" for="text-input">Nombre</label>
                                  <div class="col-md-9">
-                                     <input type="text" v-model="nombre"  class="form-control" placeholder="Nombre de cat  egoría">
+                                     <input type="text" v-model="nombre"  class="form-control" placeholder="Nombre de articulo">
                                  </div>
-                             </div>
-                             <div class="form-group row">
+                            </div>
+
+
+                            <div class="form-group row">
+                                 <label class="col-md-3 form-control-label" for="text-input">Precio de venta</label>
+                                 <div class="col-md-9">
+                                     <input type="number" v-model="precio_venta"  class="form-control" placeholder="precio de venta">
+                                 </div> 
+                            </div>
+
+                            
+                            <div class="form-group row">
+                                 <label class="col-md-3 form-control-label" for="text-input">Stock</label>
+                                 <div class="col-md-9">
+                                     <input type="number" v-model="stock"  class="form-control" placeholder="stock">
+                                 </div> 
+                            </div>
+                             
+                            <div class="form-group row">
                                  <label class="col-md-3 form-control-label" for="email-input" >Descripción</label>
                                  <div class="col-md-9">
                                      <input type="email" v-model="descripcion" class="form-control" placeholder="Descripcion">
                                  </div>
-                             </div>
+                            </div>
 
-                             <div v-show="errorCategoria" class="form-group row div-error">
+                             <div v-show="errorArticulo" class="form-group row div-error">
                                  <div class="text-center text-error">
-                                      <div v-for="error in errorMostrarMsjCategoria" :key="error" v-text="error"> 
+                                      <div v-for="error in errorMostrarMsjArticulo" :key="error" v-text="error"> 
                                         
                                       </div>
                                  </div>
@@ -129,8 +177,8 @@
                      </div>
                      <div class="modal-footer">
                          <button type="button" class="btn btn-secondary" @click="cerrarModal()">Cerrar</button>
-                         <button type="button" v-if="tipoAccion==1" class="btn btn-primary" @click="registrarCategoria()">Guardar</button>
-                         <button type="button" v-if="tipoAccion==2" class="btn btn-primary" @click="actualizarCategoria()" >Actualizar</button>
+                         <button type="button" v-if="tipoAccion==1" class="btn btn-primary" @click="registrarArticulo()">Guardar</button>
+                         <button type="button" v-if="tipoAccion==2" class="btn btn-primary" @click="actualizarArticulo()" >Actualizar</button>
 
                      </div>
                  </div>
@@ -148,15 +196,20 @@ export default {
     
     data(){
       return {
-        categoria_id: 0,
+        articulo_id: 0,
+        idcategoria: 0,
+        nombre_categoria: '',
+        codigo: '',
         nombre: '',
+        precio_venta:0,
+        stock:0,
         descripcion: '',
-        arrayCategorie: [],
+        arrayArticulo: [],
         modal: 0,
         tituloModal: '',
         tipoAccion: 0,
-        errorCategoria: 0,
-        errorMostrarMsjCategoria : [],
+        errorArticulo: 0,
+        errorMostrarMsjArticulo : [],
         pagination: {
                 
             'total':0,
@@ -168,7 +221,8 @@ export default {
         },
         offset: 3, 
         criterio: 'nombre',
-        buscar: ''
+        buscar: '',
+        arrayCategoria:[]
       }   
     },
 
@@ -210,15 +264,34 @@ export default {
 
     //Funciones    
     methods: {
-        listCategoria(page, buscar, criterio){
+        listArticulo(page, buscar, criterio){
             let me  = this;
-            var url = '/categoria?page='+page+'&buscar='+buscar+'&criterio='+criterio; 
+            var url = '/articulo?page='+page+'&buscar='+buscar+'&criterio='+criterio; 
                 axios.get(url)  
                             .then(function (response) {
                                 var resp = response.data; 
-                                me.arrayCategorie = resp.categorias.data;
+                                me.arrayArticulo = resp.articles.data;
                                 me.pagination = resp.pagination;
                                 console.log(response.data);
+                                })
+                            .catch(function (error) {
+                                // handle error
+                                console.log(error);
+                                })
+                            .then(function () {
+                            // always executed
+                });
+        },
+
+        selectCategoria(){
+            
+            let me  = this;
+            var url = '/categoria/selectCategoria'; 
+                axios.get(url)  
+                            .then(function (response) {
+                                // console.log(response.data);
+                                var resp = response.data; 
+                                me.arrayCategoria = resp.categorias;
                                 })
                             .catch(function (error) {
                                 // handle error
@@ -232,102 +305,153 @@ export default {
         cambiarPagina(page, buscar, criterio){
             let me = this;
             me.pagination.current_page = page;
-            me.listCategoria(page, buscar, criterio);
+            me.listArticulo(page, buscar, criterio);
         },
     
-        registrarCategoria(){
+        registrarArticulo(){
             
-            if (this.validarCategoria()) 
+            if (this.validarArticulo()) 
             {
                 return;    
             }
             
             let me = this;
-            axios.post('/categoria/registrar', 
+            axios.post('/articulo/registrar', 
                        {
+                           'idcategoria': this.idcategoria,
+                           'codigo': this.codigo,
                            'nombre': this.nombre,
-                           'descripcion': this.descripcion
+                           'precio_venta':this.precio_venta,
+                           'stock': this.stock,
+                           'descripcion': this.descripcion  
                        }).then( function (response) {
                            //Si todo sale bien se ejecuta cerrar y listar categoria  
                            me.cerrarModal();
-                           me.listCategoria(1,'','nombre');
+                           me.listArticulo(1,'','nombre');
                        }).catch(function (error) {
                                     console.log(error);
             });
         },
 
-        actualizarCategoria(){
+      
 
-            if (this.validarCategoria()) 
+        actualizarArticulo(){
+
+            if (this.validarArticulo()) 
             {
                 return;    
             }
             
             let me = this;
-            axios.put('/categoria/actualizar', 
+            axios.put('/articulo/actualizar', 
                        {
+                           'idcategoria': this.idcategoria,
+                           'codigo': this.codigo,
                            'nombre': this.nombre,
+                           'precio_venta':this.precio_venta,
+                           'stock': this.stock,
                            'descripcion': this.descripcion,
-                           'id': this.categoria_id
+                           'id': this.articulo_id
 
                        }).then( function (response) {
                            //Si todo sale bien se ejecuta cerrar y listar categoria  
                            me.cerrarModal();
-                           me.listCategoria(1,'','nombre');
+                           me.listArticulo(1,'','nombre');
                        }).catch(function (error) {
                                     console.log(error);
             });
 
         },
 
-        validarCategoria(){
-            this.errorCategoria = 0;
-            this.errorMostrarMsjCategoria = [];
+        validarArticulo(){
+            this.errorArticulo = 0;
+            this.errorMostrarMsjArticulo = [];
+
+            if(this.idcategoria==0)
+            {
+                this.errorMostrarMsjArticulo.push("Selecciona una categoria");
+            }
+            
+            if(!this.stock)
+            {
+                this.errorMostrarMsjArticulo.push("El stock no puede estar vacio");
+            }
+            
+            
+            if(!this.precio_venta)
+            {
+                this.errorMostrarMsjArticulo.push("El precio de venta  no puede estar vacio");
+            }
 
             if (!this.nombre) 
             {
-                this.errorMostrarMsjCategoria.push("El nombre no puede estar vacío!. ");    
+                this.errorMostrarMsjArticulo.push("El nombre no puede estar vacío!. ");    
             }
 
-            if (this.errorMostrarMsjCategoria.length) 
+            if (this.errorMostrarMsjArticulo.length) 
             { 
-                this.errorCategoria = 1;
+                this.errorArticulo = 1;
             }
 
-            return this.errorCategoria;
+            return this.errorArticulo;
         },
 
         abrirModal(modelo,accion,data=[]){
             switch (modelo) 
             {
-                case 'categoria':
+                case 'articulo':
                 {
                     switch (accion) 
                     {
                         case 'registrar':
                             this.modal = 1;
-                            this.tituloModal = 'Registrar';
-                            this.nombre = '';
-                            this.descripcion = '';
+                            this.tituloModal = 'Registrar articulo';
                             this.tipoAccion = 1;
+                            this.idcategoria=0;
+                            this.nombre_categoria='';
+                            this.codigo='';
+                            this.nombre = '';
+                            this.precio_venta=0;
+                            this.stock=0;
+                            this.descripcion = '';
                          
                             break;
                         
                         case 'actualizar':
                             console.log(data);    
                             this.modal=1; 
-                            this.tituloModal = 'Actualizar Categoria';
+                            this.tituloModal = 'Actualizar articulo';
                             this.tipoAccion = 2;
-                            this.categoria_id = data['id'];
+                            this.articulo_id = data['id'];
+                            this.idcategoria= data['idcategoria'];
+                            this.codigo=data['codigo'];
                             this.nombre = data['nombre'];
+                            this.precio_venta=data['precio_venta'];
+                            this.stock=data['stock'];
                             this.descripcion = data['descripcion'];
                             break;                       
                     }
                 }
             }
+            this.selectCategoria(); 
         },
 
-        desactivarCategoria(id){
+        
+        cerrarModal()
+        {
+            this.modal=0;
+            this.tituloModal='';
+            this.idcategoria=0;
+            this.nombre_categoria='';
+            this.codigo='';
+            this.nombre='';
+            this.precio_venta=0;
+            this.stock=0;
+            this.descripcion='';
+            this.errorArticulo=0; 
+        },
+
+        desactivarArticulo(id){
             const swalWithBootstrapButtons = Swal.mixin({
                     customClass: {
                         confirmButton: 'btn btn-success',
@@ -348,11 +472,11 @@ export default {
                     if(result.value){
                         let me = this;
                         console.log(id);
-                        axios.put('/categoria/desactivar',{
+                        axios.put('/articulo/desactivar',{
                                         'id': id
                                     }).then( function (response) {
                                         //Si todo sale bien se ejecuta cerrar y listar categoria  
-                                        me.listCategoria(1,'','nombre');
+                                        me.listArticulo(1,'','nombre');
                                         swalWithBootstrapButtons.fire(
                                             'Deleted!',
                                             'Your file has been deleted.',
@@ -375,7 +499,7 @@ export default {
 
         },
 
-        activarCategoria(id){
+        activarArticulo(id){
         const swalWithBootstrapButtons = Swal.mixin({
                     customClass: {
                         confirmButton: 'btn btn-success',
@@ -396,18 +520,18 @@ export default {
                     if(result.value){
                         let me = this;
                         console.log(id);
-                        axios.put('/categoria/activar',{
+                        axios.put('/articulo/activar',{
                                         'id': id
                                     }).then( function (response) {
                                         //Si todo sale bien se ejecuta cerrar y listar categoria  
-                                        me.listCategoria(1,'','nombre');
+                                        me.listArticulo(1,'','nombre');
                                         swalWithBootstrapButtons.fire(
                                             'Activate!',
                                             'Your file has been activate.',
                                             'success'
                                             )
                                     }).catch(function (error) {
-                                                    console.log(error);
+                                            console.log(error);
                                     });
                     } else if (
                         // Read more about handling dismissals
@@ -420,18 +544,11 @@ export default {
                     })  
         },
 
-        cerrarModal()
-        {
-            this.modal=0;
-            this.tituloModal='';
-            this.nombre='';
-            this.descripcion='';
-        },
     },
 
     //Funcion pre-determinada con la data cargada
     mounted() {
-           this.listCategoria(1,this.buscar,this.criterio);
+           this.listArticulo(1,this.buscar,this.criterio);
     }
     
     
