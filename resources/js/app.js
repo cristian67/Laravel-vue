@@ -29,6 +29,14 @@ Vue.component(
     'Articulo',
     require('./components/Article.vue').default
 );
+Vue.component(
+    'Cliente',
+    require('./components/Cliente.vue').default
+);
+Vue.component(
+    'Proveedor',
+    require('./components/Proveedor.vue').default
+);
 
 // Vue.component('articulo', require('./components/Article.vue'));
 

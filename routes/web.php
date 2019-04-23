@@ -29,3 +29,13 @@ Route::post('/articulo/registrar', 'ArticleController@store');
 Route::put('/articulo/actualizar', 'ArticleController@update');  
 Route::put('/articulo/desactivar', 'ArticleController@desactivate');  
 Route::put('/articulo/activar', 'ArticleController@activate');  
+
+
+Route::get('/cliente', 'ClienteController@index');  
+Route::post('/cliente/registrar', 'ClienteController@store'); 
+Route::put('/cliente/actualizar', 'ClienteController@update');  
+
+
+Route::get('/proveedor', 'ProveedorController@index');  
+Route::post('/proveedor/registrar', 'ProveedorController@store'); 
+Route::put('/proveedor/actualizar', 'ProveedorController@update');  
