@@ -37,6 +37,14 @@ Vue.component(
     'Proveedor',
     require('./components/Proveedor.vue').default
 );
+Vue.component(
+    'Rol',
+    require('./components/Rol.vue').default
+);
+Vue.component(
+    'User',
+    require('./components/User.vue').default
+);
 
 // Vue.component('articulo', require('./components/Article.vue'));
 

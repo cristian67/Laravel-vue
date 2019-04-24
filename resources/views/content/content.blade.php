@@ -26,10 +26,10 @@
                 <Cliente></Cliente>
         </template>
         <template v-if="menu==7">
-                <h1>"contenido menu 7"</h1>
+                <User></User>
         </template>
         <template v-if="menu==8">
-                <h1>"contenido menu 8"</h1>
+                <Rol></Rol>
         </template>
         <template v-if="menu==9">
                 <h1>"contenido menu 9"</h1>

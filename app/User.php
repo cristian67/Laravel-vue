@@ -16,9 +16,9 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'id', 'usuario', 'password', 'condicion', 'idrol'
     ];
-
+   
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -32,8 +32,20 @@ class User extends Authenticatable
      * The attributes that should be cast to native types.
      *
      * @var array
-     */
+     */ 
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public $timestamps = false;
+
+    public function rol()
+    {
+        return $this->belongsTo('App\Rol');        
+    }
+
+    public function persona()
+    {
+        return $this->belongsTo('App\Persona');        
+    }
 }
